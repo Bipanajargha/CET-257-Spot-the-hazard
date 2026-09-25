@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spot the Hazard — 360° Hazard Perception Training</title>
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ===================== MAIN MENU ===================== -->
+<section id="screen-menu" class="screen active">
+  <div class="menu-bg"></div>
+  <div class="menu-symbol" aria-hidden="true">⚠</div>
+  <div class="menu-scanner" aria-hidden="true">
+    <span class="scan-ring"></span>
+    <span class="scan-ring delay"></span>
+  </div>
+  <div class="menu-overlay"></div>
+  <div class="menu-content">
+    <h1 class="title">SPOT THE <span class="accent">HAZARD</span></h1>
+    <p class="subtitle">New starter training: practice spotting warehouse hazards before your first real shift — before they become accidents</p>
+
+    <div class="menu-buttons">
+      <button class="btn btn-primary" id="btn-play">PLAY GAME</button>
+      <button class="btn btn-secondary" id="btn-how-to-play">HOW TO PLAY</button>
+      <button class="btn btn-secondary" id="btn-settings">SETTINGS</button>
+      <button class="btn btn-secondary" id="btn-leaderboards">LEADERBOARDS</button>
+      <button class="btn btn-secondary" id="btn-safety-tips">SAFETY TIPS LIBRARY</button>
+
+    </div>
+  </div>
+  <div class="menu-footer">
+    <div class="footer-item"><span class="footer-icon">◎</span><span id="footer-levels">1 LEVEL</span><br /><small>More added as your team builds them</small></div>
+    <div class="footer-item"><span class="footer-icon">▦</span>REAL 3D WAREHOUSE<br /><small>Walk &amp; explore freely</small></div>
+    <div class="footer-item"><span class="footer-icon">★</span>SCORE &amp; IMPROVE<br /><small>Beat your best score</small></div>
+  </div>
+</section>
+
+<!-- ===================== LEVEL SELECT ===================== -->
+<section id="screen-levels" class="screen">
+  <div class="levels-content">
+    <h1 class="title levels-title">SELECT <span class="accent">LEVEL</span></h1>
+    <p class="subtitle">Same warehouse, four shifts — each one busier and faster than the last</p>
+    <div class="level-grid" id="level-grid"></div>
+    <button class="btn btn-secondary levels-back" id="btn-levels-back">← BACK TO MENU</button>
+  </div>
+</section>
+
+<!-- ===================== HOW TO PLAY MODAL ===================== -->
+<section id="screen-howtoplay" class="screen modal-screen">
+  <div class="modal-panel howtoplay-panel">
+    <h2 class="modal-title">HOW TO PLAY</h2>
+    <div class="howto-grid">
+      <div class="howto-step">
+        <div class="step-num">1</div>
+        <div class="step-icon">🛡</div>
+        <div class="step-title">SAFE ROOM FIRST</div>
+        <div class="step-desc">Every level opens with a hazard-free view of the warehouse — no timer, no scoring. Look around and get familiar, or skip straight in.</div>
+      </div>
+      <div class="howto-step">
+        <div class="step-num">2</div>
+        <div class="step-icon">🖱</div>
+        <div class="step-title">LOOK AROUND FREELY</div>
+        <div class="step-desc">Drag to look around, W/S to walk, A/D to turn, or click the floor to walk there — a full 3D warehouse you can explore.</div>
+      </div>
+      <div class="howto-step">
+        <div class="step-num">3</div>
+        <div class="step-icon">⏱</div>
+        <div class="step-title">BEAT THE CLOCK</div>
+        <div class="step-desc">Once you begin, you have a fixed time limit for the whole level — find enough hazards before it runs out.</div>
+      </div>
+      <div class="howto-step">
+        <div class="step-num">4</div>
+        <div class="step-icon">⚠</div>
+        <div class="step-title">SPOT IT...</div>
+        <div class="step-desc">Click any hazard, anytime, in any order — there's no rush per hazard, just the overall level timer.</div>
+      </div>
+      <div class="howto-step">
+        <div class="step-num">5</div>
+        <div class="step-icon">✔</div>
+        <div class="step-title">...THEN FIX IT</div>
+        <div class="step-desc">Choose the correct real response — Report it or Fix it now. Picking the wrong one costs points, even if you spotted the hazard itself.</div>
+      </div>
+      <div class="howto-step">
+        <div class="step-num">6</div>
+        <div class="step-icon">🏁</div>
+        <div class="step-title">PASS OR REPLAY</div>
+        <div class="step-desc">Each level needs a minimum number of hazards resolved to pass. Fall short and you'll replay the same level until you get there.</div>
+      </div>
+      <div class="howto-step">
+        <div class="step-num">7</div>
+        <div class="step-icon">📈</div>
+        <div class="step-title">LEVELS GET HARDER</div>
+        <div class="step-desc">Passing a level unlocks the next one. Later levels bring different hazard mixes and tighter pass requirements — the same warehouse, tougher shifts.</div>
+      </div>
+      <div class="howto-step">
+        <div class="step-num">8</div>
+        <div class="step-icon">🏆</div>
+        <div class="step-title">SCORE & IMPROVE</div>
+        <div class="step-desc">Your final score breaks down early/late catches, missed hazards, and fix choices — so you see exactly where to improve next run.</div>
+      </div>
+    </div>
+    <p class="howto-pass-note">Resolve at least <strong id="howto-pass-min">4</strong> hazards before time runs out to pass a level — fewer, and you'll replay it.</p>
+    <button class="btn btn-secondary modal-close" data-close="screen-howtoplay">CLOSE</button>
+  </div>
+</section>
+
+<!-- ===================== SETTINGS MODAL ===================== -->
+<section id="screen-settings" class="screen modal-screen">
+  <div class="modal-panel">
+    <h2 class="modal-title">SETTINGS</h2>
+
+    <div class="settings-row">
+      <label>MUSIC</label>
+      <input type="range" id="setting-music" min="0" max="100" value="70" />
+    </div>
+    <div class="settings-row">
+      <label>SOUND EFFECTS</label>
+      <input type="range" id="setting-sfx" min="0" max="100" value="70" />
+    </div>
+    <div class="settings-row">
+      <label>DIFFICULTY</label>
+      <select id="setting-difficulty">
+        <option value="easy">Easy</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+    <div class="settings-row settings-row-action">
+      <label>RESET PROGRESS</label>
+      <button class="btn-link" id="btn-reset-progress">RESET</button>
+    </div>
+
+    <button class="btn btn-secondary modal-close" data-close="screen-settings">BACK</button>
+  </div>
+</section>
+
+<!-- ===================== LEADERBOARD ===================== -->
+<section id="screen-leaderboard" class="screen modal-screen">
+  <div class="modal-panel leaderboard-panel">
+    <h2 class="modal-title accent-title">LEADERBOARD</h2>
+    <div class="leaderboard-tabs">
+      <button class="tab-btn active" data-tab="week">THIS WEEK</button>
+      <button class="tab-btn" data-tab="alltime">ALL TIME</button>
+    </div>
+    <div class="leaderboard-list" id="leaderboard-list"></div>
+    <button class="btn btn-secondary modal-close" data-close="screen-leaderboard">BACK</button>
+  </div>
+</section>
+
+<!-- ===================== SAFETY TIPS LIBRARY ===================== -->
+<section id="screen-safety-tips" class="screen modal-screen">
+  <div class="modal-panel">
+    <h2 class="modal-title accent-title">SAFETY TIPS LIBRARY</h2>
+    <div class="tips-list">
+      <div class="tip-row"><span class="tip-icon">🚪</span><div><strong>Blocked Exits</strong><br /><small>Always keep exits and routes clear.</small></div></div>
+      <div class="tip-row"><span class="tip-icon">🧹</span><div><strong>Poor Housekeeping</strong><br /><small>Keep floors clean and free from obstacles.</small></div></div>
+      <div class="tip-row"><span class="tip-icon">📦</span><div><strong>Unsafe Stacking</strong><br /><small>Stack items safely and within height limits.</small></div></div>
+      <div class="tip-row"><span class="tip-icon">💧</span><div><strong>Spill Hazards</strong><br /><small>Clean up spills immediately to prevent slips.</small></div></div>
+      <div class="tip-row"><span class="tip-icon">🦺</span><div><strong>PPE Compliance</strong><br /><small>Hi-vis and required safety gear stays on at all times on the floor.</small></div></div>
+      <div class="tip-row"><span class="tip-icon">🚜</span><div><strong>Vehicle Clearance</strong><br /><small>Give forklifts and moving equipment their marked clearance.</small></div></div>
+    </div>
+    <button class="btn btn-secondary modal-close" data-close="screen-safety-tips">CLOSE</button>
+  </div>
+</section>
+
+<!-- ===================== LOADING ===================== -->
+<section id="screen-loading" class="screen">
+  <div class="loading-content">
+    <div class="warning-icon">!</div>
+    <h1 class="title">SPOT THE <span class="accent">HAZARD</span></h1>
+    <p class="subtitle">Hazard Perception Training</p>
+    <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-bar"></div></div>
+    <div class="loading-tip">
+      💡 SAFETY TIP: Staying alert and spotting hazards early can prevent accidents and save lives.
+    </div>
+    <p class="loading-label" id="loading-label">LOADING SCENE. PLEASE WAIT...</p>
+  </div>
+</section>
+
+<!-- ===================== GAME SCREEN ===================== -->
+<section id="screen-game" class="screen">
+  <div id="panorama-container"></div>
+
+  <div class="hud hud-top">
+    <div class="hud-left" id="hud-left">PHASE 1 / 3</div>
+    <div class="hud-center">
+      <div class="hud-stat"><span class="hud-label">SCORE</span><span class="hud-value" id="hud-score">0</span></div>
+      <div class="hud-stat"><span class="hud-label">FOUND</span><span class="hud-value" id="hud-found">0 / 8</span></div>
+      <div class="hud-stat hud-timer"><span class="hud-label">TIME LEFT</span><span class="hud-value" id="hud-timer">01:30</span></div>
+    </div>
+    <button class="btn btn-menu" id="btn-game-menu">☰ MENU</button>
+  </div>
+
+  <div class="scene-banner safe" id="scene-banner">SCENE A · SAFE ROOM</div>
+
+  <div class="hud hud-bottom">
+    <div class="hud-hint">💡 <span id="hud-hint-text">Find all 8 hazards. Drag to look around, W/S to walk, A/D to turn, or click the floor to walk there.</span></div>
+    <div class="hud-pips" id="hud-pips"></div>
+    <div class="hud-actions">
+      <button class="btn btn-hint" id="btn-hint">💡 HINT</button>
+    </div>
+  </div>
+
+  <div class="drag-cue" id="drag-cue">Drag to look around · W/S walk · A/D turn · click floor to walk there</div>
+
+  <!-- Mentor guide: a supervisor character giving short contextual tips -->
+  <div class="mentor" id="mentor">
+    <div class="mentor-avatar">👷</div>
+    <div class="mentor-bubble" id="mentor-bubble">Welcome. I'll walk you through this.</div>
+  </div>
+
+  <!-- Safe Room overlay: shown before any hazards appear -->
+  <div class="overlay-panel" id="intro-overlay">
+    <div class="overlay-card">
+      <div class="warning-icon">🛡</div>
+      <h2 class="modal-title">SAFE ROOM</h2>
+      <p class="overlay-text">
+        This is a <strong>hazard-free</strong> view of the warehouse —
+        no timer, no scoring. Look around and get familiar with the
+        space, or skip straight to the exercise.
+      </p>
+      <div class="overlay-buttons">
+        <button class="btn btn-secondary" id="btn-intro-skip">SKIP</button>
+        <button class="btn btn-primary" id="btn-intro-look">LOOK AROUND</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shown after "Look Around" — a floating bar to begin when ready -->
+  <div class="begin-bar" id="begin-bar">
+    <span>Take your time. Ready when you are.</span>
+    <button class="btn btn-primary" id="btn-begin">BEGIN</button>
+  </div>
+
+  <!-- Fix-It modal: shown right after a hazard is spotted -->
+  <div class="overlay-panel" id="fixit-overlay">
+    <div class="overlay-card fixit-card">
+      <div class="fixit-alert-header">⚠ HAZARD IDENTIFIED!</div>
+      <div class="fixit-icon">📦</div>
+      <h2 class="modal-title accent-title" id="fixit-hazard-title">Hazard Spotted</h2>
+      <p class="overlay-text" id="fixit-hazard-desc"></p>
+      <p class="overlay-text overlay-text-sub">What's the correct response?</p>
+      <div class="fixit-options" id="fixit-options"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PAUSE / GAME MENU ===================== -->
+<section id="screen-pause" class="screen modal-screen">
+  <div class="modal-panel">
+    <h2 class="modal-title">PAUSED</h2>
+    <div class="menu-buttons">
+      <button class="btn btn-primary" id="btn-resume">RESUME</button>
+      <button class="btn btn-secondary" id="btn-restart-level">RESTART LEVEL</button>
+      <button class="btn btn-secondary" id="btn-quit-to-menu">QUIT TO MENU</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESULTS ===================== -->
+<section id="screen-results" class="screen">
+  <div class="results-panel">
+    <div class="results-shield" id="results-shield">
+      <div class="shield-stars" id="results-stars">
+        <span class="star" data-i="1">★</span>
+        <span class="star" data-i="2">★</span>
+        <span class="star" data-i="3">★</span>
+      </div>
+      <div class="shield-pct" id="results-pct">100%</div>
+    </div>
+    <h2 class="results-title" id="results-title">GOOD JOB!</h2>
+    <p class="results-sub" id="results-sub">You found 8 of 8 hazards.</p>
+
+    <div class="score-card">
+      <div id="score-phases"></div>
+      <div class="score-row"><span id="score-early-label">Hazards found (0 x 10)</span><span id="score-early" class="pos">+0</span></div>
+      <div class="score-row"><span id="score-fixcorrect-label">Correct fix chosen (0 x 5)</span><span id="score-fixcorrect" class="pos">+0</span></div>
+      <div class="score-row"><span id="score-fixwrong-label">Wrong fix chosen (0 x -3)</span><span id="score-fixwrong" class="neg">-0</span></div>
+      <div class="score-row"><span id="score-time-label">Completion bonus</span><span id="score-time" class="pos">+0</span></div>
+      <div class="score-row score-total"><span>Total Score</span><span id="score-total">0</span></div>
+    </div>
+
+    <div class="results-buttons">
+      <button class="btn btn-secondary" id="btn-replay-level">REPLAY LEVEL</button>
+      <button class="btn btn-primary" id="btn-next-level">NEXT LEVEL →</button>
+      <button class="btn btn-primary" id="btn-back-to-menu">BACK TO MENU</button>
+    </div>
+  </div>
+</section>
+
+<!-- Hazard found toast -->
+<div class="toast" id="toast"></div>
+
+<!-- three.js (CDN) -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+
+<script src="js/storage.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/hazards.js"></script>
+<script src="js/scene3d.js"></script>
+<script src="js/leaderboard.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
