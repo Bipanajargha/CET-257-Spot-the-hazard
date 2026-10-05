@@ -535,3 +535,33 @@ select, input[type=range]{font-family:inherit;}
   transition:opacity .25s ease, transform .25s ease;
 }
 .mentor-bubble.show{ opacity:1; transform:translateY(0); }
+
+/* ============ STATUS FEEDBACK (client feedback 17 Sep) ============ */
+.status-panel{
+  position:fixed; left:50%; bottom:90px; transform:translate(-50%,12px);
+  min-width:280px; max-width:80%; padding:12px 20px; border-radius:10px;
+  background:var(--bg-card); border:2px solid var(--border-navy); color:#fff;
+  text-align:center; opacity:0; pointer-events:none; z-index:55;
+  transition:opacity .25s, transform .25s;
+}
+.status-panel.show{ opacity:1; transform:translate(-50%,0); }
+.status-panel .status-title{ font-weight:700; font-size:15px; }
+.status-panel .status-detail{ font-size:13px; opacity:.85; margin-top:3px; }
+.status-panel.correct{ border-color:var(--green); }
+.status-panel.correct .status-title{ color:#7be3b6; }
+.status-panel.wrong{ border-color:var(--red); }
+.status-panel.wrong .status-title{ color:#ff9aa0; }
+.status-panel.info{ border-color:#E9A945; }
+.status-panel.info .status-title{ color:#E9A945; }
+#status-flash{ position:fixed; inset:0; pointer-events:none; z-index:45; opacity:0; }
+#status-flash.flash-correct{ box-shadow:inset 0 0 120px 30px rgba(47,158,120,.55); animation:statusFlash .7s ease-out; }
+#status-flash.flash-wrong{ box-shadow:inset 0 0 120px 30px rgba(215,52,42,.55); animation:statusFlash .7s ease-out; }
+@keyframes statusFlash{ 0%{opacity:1} 100%{opacity:0} }
+.resolved-tag{
+  position:absolute; transform:translate(-50%,-50%); pointer-events:none; z-index:20;
+  background:rgba(47,158,120,.92); color:#fff; font-weight:700; font-size:13px;
+  letter-spacing:.06em; padding:4px 10px; border-radius:6px; white-space:nowrap;
+}
+.settings-hint{ font-size:12px; opacity:.7; margin:-4px 0 8px; }
+
+#panorama-container{ overflow:hidden; }

@@ -416,15 +416,61 @@ class Warehouse3D {
 
   markFound(hazardId) {
     const entry = this.hazardMeshes[hazardId];
-    if (!entry) return;
+    if (!entry || entry.found) return;
     entry.found = true;
+    // Client feedback (17 Sep): the hazard is cleared from the scene once handled.
+    // Flash green, then shrink away; it can no longer be clicked.
     entry.group.traverse((c) => {
       if (c.isMesh) {
         c.material = c.material.clone();
         c.material.color.set(0x4ac48a);
         c.material.emissive = new THREE.Color(0x1a3c2c);
-        c.material.emissiveIntensity = 0.5;
+        c.material.emissiveIntensity = 0.6;
       }
+    });
+    const idx = this.raycastTargets.indexOf(entry.group);
+    if (idx >= 0) this.raycastTargets.splice(idx, 1);
+    entry.resolveT = 0;
+    entry.baseScale = entry.group.scale.clone();
+    this._addResolvedTag(entry);
+  }
+
+  _addResolvedTag(entry) {
+    const box = new THREE.Box3().setFromObject(entry.group);
+    const pos = box.getCenter(new THREE.Vector3());
+    pos.y = box.max.y + 0.3;
+    const el = document.createElement('div');
+    el.className = 'resolved-tag';
+    el.textContent = '✔ RESOLVED';
+    this.container.appendChild(el);
+    this.resolvedTags = this.resolvedTags || [];
+    this.resolvedTags.push({ el, pos, life: 2.2 });
+  }
+
+  _updateResolveAnims(dt) {
+    Object.values(this.hazardMeshes).forEach((entry) => {
+      if (entry.resolveT == null || entry.removed) return;
+      entry.resolveT += dt;
+      const t = entry.resolveT;
+      if (t > 0.5) {
+        const k = Math.max(0, 1 - (t - 0.5) / 0.5);
+        entry.group.scale.set(entry.baseScale.x * k, entry.baseScale.y * k, entry.baseScale.z * k);
+        if (k <= 0) { entry.group.visible = false; entry.removed = true; }
+      }
+    });
+    if (!this.resolvedTags) return;
+    const w = this.container.clientWidth || window.innerWidth;
+    const h = this.container.clientHeight || window.innerHeight;
+    this.resolvedTags = this.resolvedTags.filter((tag) => {
+      tag.life -= dt;
+      if (tag.life <= 0) { tag.el.remove(); return false; }
+      const p = tag.pos.clone().project(this.camera);
+      const visible = p.z < 1;
+      tag.el.style.display = visible ? 'block' : 'none';
+      tag.el.style.left = ((p.x * 0.5 + 0.5) * w) + 'px';
+      tag.el.style.top = ((-p.y * 0.5 + 0.5) * h - (2.2 - tag.life) * 12) + 'px';
+      tag.el.style.opacity = String(Math.min(1, tag.life));
+      return true;
     });
   }
 
@@ -434,7 +480,7 @@ class Warehouse3D {
   setSafeRoom(active) {
     this.safeRoomActive = active;
     Object.values(this.hazardMeshes).forEach((entry) => {
-      entry.group.visible = !active;
+      entry.group.visible = !active && !entry.removed;
     });
   }
 
@@ -609,6 +655,7 @@ class Warehouse3D {
       this._raf = requestAnimationFrame(animate);
       const dt = Math.min(0.1, this.clock.getDelta());
       this._updateMovement(dt);
+      this._updateResolveAnims(dt);
       this.renderer.render(this.scene, this.camera);
     };
     animate();

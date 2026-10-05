@@ -49,7 +49,10 @@ const Game = {
     this.phaseScores = {};
     for (let p = 1; p <= level.phaseCount; p++) this.phaseScores[p] = 0;
     level.hazards.forEach((h) => { this.hazardStatus[h.id] = 'pending'; });
-    this.timeLeft = level.timeLimit || parseInt(settings.timer, 10) || 80;
+    const baseTime = level.timeLimit || parseInt(settings.timer, 10) || 80;
+    // Client feedback (17 Sep): difficulty now changes the time limit (Easy 1.5x, Normal 1x, Hard 0.75x).
+    this.timeLimit = Math.round(baseTime * (this.diff.timeFactor || 1));
+    this.timeLeft = this.timeLimit;
     this.ended = false;
     this.introMode = true;
   },
@@ -146,6 +149,7 @@ const Game = {
     this.phaseScores[hazard.phase] = (this.phaseScores[hazard.phase] || 0) + 10;
     AudioFX.correct();
     this._updateHud();
+    showStatus('info', `Hazard spotted: ${hazard.title}`, 'Now choose the correct response (+10)');
 
     // Freeze the 3D scene's own input while the Fix-It choice is open —
     // stops walking, dragging, or clicking other things from interfering.
@@ -173,7 +177,8 @@ const Game = {
       this.fixCorrect += 1;
       this.phaseScores[hazard.phase] = (this.phaseScores[hazard.phase] || 0) + 5;
       AudioFX.correct();
-      showToast(`✔ ${hazard.title} — correctly resolved (+15)`, 'correct');
+      showToast(`✔ ${hazard.title} — correctly resolved (+5)`, 'correct');
+      showStatus('correct', `Hazard resolved: ${hazard.title}`, `Correct response: ${FIX_OPTIONS[hazard.correctFix]} (+5)`);
       if (typeof mentorSay === 'function') {
         mentorSay('Exactly right — that\'s the response a real supervisor would want to see.');
       }
@@ -182,6 +187,7 @@ const Game = {
       this.fixWrong += 1;
       AudioFX.wrong();
       showToast(`✘ Spotted, but wrong response for ${hazard.title} (-3)`, 'wrong');
+      showStatus('wrong', `Wrong response: ${hazard.title}`, `Best response was: ${FIX_OPTIONS[hazard.correctFix]} (-3)`);
       if (typeof mentorSay === 'function') {
         mentorSay('Not quite — spotting it is only half the job. Think about what actually needs to happen next.');
       }
@@ -216,6 +222,7 @@ const Game = {
     this.score = Math.max(0, this.score - this.diff.wrongPenalty);
     AudioFX.wrong();
     showToast('✘ Not a hazard there', 'wrong');
+    showStatus('wrong', 'Not a hazard', `Wrong click penalty: -${this.diff.wrongPenalty}`);
     this._updateHud();
   },
 
@@ -228,6 +235,7 @@ const Game = {
     AudioFX.click();
     this.score = Math.max(0, this.score - 2);
     this._updateHud();
+    showStatus('info', 'Hint used', 'The camera is turning to an undiscovered hazard (-2)');
   },
 
   _currentPhase() {
@@ -303,7 +311,7 @@ const Game = {
       fixWrong: this.fixWrong,
       completionBonus,
       total: this.score,
-      timerLimit: this.level.timeLimit,
+      timerLimit: this.timeLimit,
       phaseScores: Object.assign({}, this.phaseScores),
       phaseCount: this.level.phaseCount
     };
@@ -329,4 +337,33 @@ function showToast(msg, kind) {
   t.className = 'toast show ' + (kind || '');
   clearTimeout(showToast._h);
   showToast._h = setTimeout(() => { t.classList.remove('show'); }, 1600);
+}
+
+/* Status panel + screen flash: persistent visual feedback after every action
+   (client feedback 17 Sep). Elements are created on demand. */
+function showStatus(kind, title, detail) {
+  let el = document.getElementById('status-panel');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'status-panel';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    document.body.appendChild(el);
+  }
+  const icon = kind === 'correct' ? '✔' : kind === 'wrong' ? '✘' : 'ℹ';
+  el.className = 'status-panel show ' + kind;
+  el.textContent = '';
+  const t = document.createElement('div'); t.className = 'status-title'; t.textContent = `${icon} ${title}`;
+  const d = document.createElement('div'); d.className = 'status-detail'; d.textContent = detail;
+  el.appendChild(t); el.appendChild(d);
+  clearTimeout(showStatus._h);
+  showStatus._h = setTimeout(() => el.classList.remove('show'), 3500);
+
+  if (kind !== 'info') {
+    let f = document.getElementById('status-flash');
+    if (!f) { f = document.createElement('div'); f.id = 'status-flash'; document.body.appendChild(f); }
+    f.className = '';
+    void f.offsetWidth; // restart animation
+    f.className = 'flash-' + kind;
+  }
 }

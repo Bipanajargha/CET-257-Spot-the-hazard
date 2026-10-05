@@ -192,3 +192,10 @@ Every level still includes:
 - **Add a whole new level:** duplicate `LEVEL_1_WAREHOUSE` and `WORLD` in
   `js/hazards.js` (e.g. `LEVEL_2_LOADING_BAY`), build its geometry in a
   new method, and pass it to `Game.init()` in `main.js`.
+
+
+## Changes since the Assignment 1 presentation (client feedback, 17 Sep 2026)
+
+1. **Hazard removed once handled** – after a response is chosen the hazard flashes green, shrinks out of the scene and shows a floating "RESOLVED" tag. It can no longer be clicked.
+2. **Status feedback after every action** – a status panel and a green/red screen flash confirm every spot, fix, wrong click and hint, and say what the best response was.
+3. **Difficulty changes the time limit** – Easy 1.5x (120 s), Normal 1x (80 s), Hard 0.75x (60 s) per level.
