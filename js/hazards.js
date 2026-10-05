@@ -181,7 +181,7 @@ const LEVEL_1_WAREHOUSE = LEVEL_4_FULL_AUDIT;
 const LEVELS = [LEVEL_1_ORIENTATION, LEVEL_2_MIDDAY, LEVEL_3_LOADING, LEVEL_4_FULL_AUDIT];
 
 const DIFFICULTY_SETTINGS = {
-  easy:   { moveSpeed: 6.5, turnSpeed: 95, wrongPenalty: 3 },
-  normal: { moveSpeed: 5.5, turnSpeed: 80, wrongPenalty: 5 },
-  hard:   { moveSpeed: 4.5, turnSpeed: 65, wrongPenalty: 8 }
+  easy:   { moveSpeed: 6.5, turnSpeed: 95, wrongPenalty: 3, timeFactor: 1.5 },
+  normal: { moveSpeed: 5.5, turnSpeed: 80, wrongPenalty: 5, timeFactor: 1.0 },
+  hard:   { moveSpeed: 4.5, turnSpeed: 65, wrongPenalty: 8, timeFactor: 0.75 }
 };
